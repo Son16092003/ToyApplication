@@ -1,10 +1,13 @@
 import React from 'react'
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
+import SearchComponent from '../components/Search'
 
 const SuccessCheckOut = ({navigation}) => {
 
   return (
     <View style={styles.container}>
+
+      <SearchComponent />
       {/* Icon GIF */}
       <Image
         source={{ uri: 'https://www.saigonroses.com/image/catalog/1_gtv/common/good.gif' }}
@@ -19,7 +22,7 @@ const SuccessCheckOut = ({navigation}) => {
       <TouchableOpacity
         style={styles.buttonBack}
         activeOpacity={0.7}
-        onPress={() => navigation.goBack()}
+        onPress={() => navigation.navigate("Card")}
       >
         <Text style={styles.textButton}>Quay lại</Text>
       </TouchableOpacity>
