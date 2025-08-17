@@ -6,8 +6,6 @@ const SuccessCheckOut = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-
-      <SearchComponent />
       {/* Icon GIF */}
       <Image
         source={{ uri: 'https://www.saigonroses.com/image/catalog/1_gtv/common/good.gif' }}
