@@ -72,7 +72,50 @@ app.post("/api/orders", async (req, res) => {
   }
 });
 
+// Đăng ký user
+// Đăng ký user (lưu vào bảng "user" tự tạo)
+app.post("/api/register", async (req, res) => {
+  try {
+    const { email, password_hash, full_name, phone } = req.body;
+
+    // Insert trực tiếp vào bảng "user"
+    const { data, error } = await supabase
+      .from("users")
+      .insert([{ email, password_hash, full_name, phone }])
+      .select();
+
+    if (error) throw error;
+
+    res.status(201).json({ user: data[0] });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Đăng nhập user (so khớp email + password trong bảng "user")
+app.post("/api/login", async (req, res) => {
+  try {
+    const { email, password_hash } = req.body;
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .eq("password_hash", password_hash) // ⚠️ Bảo mật: không nên lưu plain password
+      .single();
+
+    if (error || !data) throw new Error("Sai email hoặc mật khẩu");
+
+    res.status(200).json({ user: data });
+  } catch (err) {
+    res.status(401).json({ message: err.message });
+  }
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Server đang chạy ở http://localhost:${PORT}`);
 });
+
+
