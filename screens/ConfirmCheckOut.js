@@ -6,23 +6,23 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { useDispatch, useSelector } from "react-redux";
+import { updateForm, placeOrderThunk } from "../reduxtollkit/slice/orderSlice";
 
 const ConfirmCheckOut = ({ navigation }) => {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-  });
+  const dispatch = useDispatch();
+  const { form, product, loading, error } = useSelector((state) => state.order);
 
-  const productInfo = {
-    name: "Mô Hình OnePiece zoro Chiến Đấu Siêu Ngầu Cao : 23.5cm nặng : 1000gram - One Piece - Hộp Màu K17-T4-S7",
-    price: 150000,
-    image:
-      "https://bizweb.dktcdn.net/100/418/981/products/1-2717f3b8-0397-4ab3-8c5b-6bf183ee82b2.jpg?v=1755138997937",
+  const handleOrder = () => {
+    dispatch(placeOrderThunk({ form, product })).then((res) => {
+      if (res.meta.requestStatus === "fulfilled") {
+        navigation.navigate("SuccessCheckOut");
+      }
+    });
   };
 
   return (
@@ -41,14 +41,14 @@ const ConfirmCheckOut = ({ navigation }) => {
         {/* Thông tin sản phẩm */}
         <View style={styles.productCard}>
           <Image
-            source={{ uri: productInfo.image }}
+            source={{ uri: product.image }}
             style={styles.productImage}
             resizeMode="cover"
           />
           <View style={{ flex: 1 }}>
-            <Text style={styles.productName}>{productInfo.name}</Text>
+            <Text style={styles.productName}>{product.name}</Text>
             <Text style={styles.productPrice}>
-              {productInfo.price.toLocaleString()}đ
+              {product.price.toLocaleString()}đ
             </Text>
           </View>
         </View>
@@ -59,36 +59,47 @@ const ConfirmCheckOut = ({ navigation }) => {
             placeholder="Họ và tên"
             style={styles.input}
             value={form.name}
-            onChangeText={(text) => setForm({ ...form, name: text })}
+            onChangeText={(text) => dispatch(updateForm({ name: text }))}
           />
           <TextInput
             placeholder="Email"
             style={styles.input}
             keyboardType="email-address"
             value={form.email}
-            onChangeText={(text) => setForm({ ...form, email: text })}
+            onChangeText={(text) => dispatch(updateForm({ email: text }))}
           />
           <TextInput
             placeholder="Số điện thoại"
             style={styles.input}
             keyboardType="phone-pad"
             value={form.phone}
-            onChangeText={(text) => setForm({ ...form, phone: text })}
+            onChangeText={(text) => dispatch(updateForm({ phone: text }))}
           />
           <TextInput
             placeholder="Địa chỉ"
             style={[styles.input, { height: 80 }]}
             multiline
+            textAlignVertical="top"
             value={form.address}
-            onChangeText={(text) => setForm({ ...form, address: text })}
+            onChangeText={(text) => dispatch(updateForm({ address: text }))}
           />
+          {error && <Text style={{ color: "red" }}>{error}</Text>}
         </View>
       </ScrollView>
 
       {/* Nút đặt hàng */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.buttonOrder} activeOpacity={0.7} onPress={() => navigation.navigate("SuccessCheckOut")}>
-          <Text style={styles.textButton}>Đặt hàng</Text>
+        <TouchableOpacity
+          style={styles.buttonOrder}
+          activeOpacity={0.7}
+          onPress={handleOrder}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.textButton}>Đặt hàng</Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -106,8 +117,7 @@ const styles = StyleSheet.create({
     height: 80,
   },
   arrowBack: { fontSize: 25, color: "#fff", paddingLeft: "5%" },
-  title: { fontSize: 32, fontWeight: "bold", color: "#fff", marginLeft: '2%',  },
-
+  title: { fontSize: 32, fontWeight: "bold", color: "#fff", marginLeft: "2%" },
   productCard: {
     flexDirection: "row",
     backgroundColor: "#fff",
@@ -129,7 +139,6 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   productPrice: { fontSize: 16, fontWeight: "bold", color: "#41B100" },
-
   formContainer: { marginTop: 10 },
   input: {
     borderWidth: 1,
@@ -140,7 +149,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "#FAFAFA",
   },
-
   footer: { padding: 16 },
   buttonOrder: {
     backgroundColor: "#FFC107",

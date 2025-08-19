@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   FlatList,
   StyleSheet,
@@ -9,42 +9,21 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Navbar from "../components/Navbar";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  increaseQuantity,
+  decreaseQuantity,
+  removeItem,
+} from "../reduxtollkit/slice/cartSlice";
 
 const Card = ({ navigation }) => {
-  const [productList, setProductList] = useState([
-    {
-      id: "1",
-      name: "Mô Hình OnePiece zoro Chiến Đấu Siêu Ngầu Cao : 33cm nặng : 1000gram - One Piece - Hộp Carton -K14-T4-S3",
-      price: 100000,
-      quantity: 1,
-      image:
-        "https://bizweb.dktcdn.net/100/418/981/products/1-a5c3dbe3-1a34-4618-b43e-104276627c3c.jpg?v=1755068078660",
-    },
-    {
-      id: "2",
-      name: "Mô Hình OnePiece zoro Chiến Đấu Siêu Ngầu Cao : 23.5cm nặng : 1000gram - One Piece - Hộp Màu K17-T4-S7",
-      price: 150000,
-      quantity: 1,
-      image:
-        "https://bizweb.dktcdn.net/100/418/981/products/1-2717f3b8-0397-4ab3-8c5b-6bf183ee82b2.jpg?v=1755138997937",
-    },
-    {
-      id: "3",
-      name: "Mô Hình OnePiece Sanji chiến đấu siêu ngầu Cao : 28.5cm nặng 1800g - One Piece - Full Box - Hộp Màu - K13-T4-S4-S5 (G-12)",
-      price: 120000,
-      quantity: 1,
-      image:
-        "https://bizweb.dktcdn.net/100/418/981/products/1-d9acd1c3-95a7-43f9-aa1f-79c42ab719a3.jpg?v=1755067614440",
-    },
-    {
-      id: "4",
-      name: "Mô Hình OnePiece luffy gear 4 nắm đấm to - cao 20cm - nặng 450gram - Figure One Piece - Hộp Màu - K13-T4-S6",
-      price: 120000,
-      quantity: 1,
-      image:
-        "https://bizweb.dktcdn.net/100/418/981/products/1-1c30b67e-021a-4968-8a3f-eb9914e94ac9.jpg?v=1754995322830",
-    },
-  ]);
+  const dispatch = useDispatch();
+  const productList = useSelector((state) => state.cart.productList);
+
+  const totalPrice = productList.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
   return (
     <View style={styles.container}>
@@ -87,12 +66,14 @@ const Card = ({ navigation }) => {
                   <View style={styles.operatorContainer}>
                     <TouchableOpacity
                       style={styles.pressIncreaseOperatorContainer}
+                      onPress={() => dispatch(decreaseQuantity(item.id))}
                     >
                       <Text>-</Text>
                     </TouchableOpacity>
                     <Text style={styles.quantity}>{item.quantity}</Text>
                     <TouchableOpacity
                       style={styles.pressDecreaseOperatorContainer}
+                      onPress={() => dispatch(increaseQuantity(item.id))}
                     >
                       <Text>+</Text>
                     </TouchableOpacity>
@@ -100,6 +81,7 @@ const Card = ({ navigation }) => {
                   <View style={styles.deleteContainer}>
                     <TouchableOpacity
                       style={styles.pressDeleteOperatorContainer}
+                      onPress={() => dispatch(removeItem(item.id))}
                     >
                       <Text style={styles.textDelete}>Xoá</Text>
                     </TouchableOpacity>
@@ -115,7 +97,7 @@ const Card = ({ navigation }) => {
       <View style={styles.footerContainer}>
         <View style={styles.paymentTextContainer}>
           <Text style={styles.paymentText}>Tổng</Text>
-          <Text style={styles.paymentText}>đ</Text>
+          <Text style={styles.paymentText}>{totalPrice.toLocaleString()}đ</Text>
         </View>
       </View>
 
@@ -144,16 +126,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 80,
   },
-  arrowBack: {
-    fontSize: 25,
-    color: "#fff",
-    paddingLeft: "5%",
-  },
-  titleContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  arrowBack: { fontSize: 25, color: "#fff", paddingLeft: "5%" },
+  titleContainer: { flex: 1, alignItems: "center", justifyContent: "center" },
   title: {
     fontSize: 32,
     color: "white",
@@ -176,12 +150,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#FFC107",
   },
-  productImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
-    marginRight: 12,
-  },
+  productImage: { width: 80, height: 80, borderRadius: 10, marginRight: 12 },
   cardContent: { flex: 1 },
   bodyContent: {
     flexDirection: "row",
@@ -194,25 +163,14 @@ const styles = StyleSheet.create({
     color: "#4C4C4C",
     flexShrink: 1,
   },
-  totalPriceProdcut: {
-    fontSize: 18,
-    color: "#41B100",
-    fontWeight: "bold",
-  },
-  priceProdcut: {
-    fontSize: 16,
-    color: "#777",
-    marginBottom: 8,
-  },
+  totalPriceProdcut: { fontSize: 18, color: "#41B100", fontWeight: "bold" },
+  priceProdcut: { fontSize: 16, color: "#777", marginBottom: 8 },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  operatorContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
+  operatorContainer: { flexDirection: "row", alignItems: "center" },
   pressIncreaseOperatorContainer: {
     justifyContent: "center",
     alignItems: "center",
@@ -255,12 +213,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  textDelete: {
-    fontSize: 14,
-    color: "red",
-    fontWeight: "bold",
-  },
-  footerContainer: { flex: 1, paddingHorizontal: 12, paddingVertical: 10 },
+  textDelete: { fontSize: 14, color: "red", fontWeight: "bold" },
+  footerContainer: {
+  paddingHorizontal: 12,
+  paddingVertical: 10,
+},
   paymentTextContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -271,7 +228,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   paymentText: { fontSize: 20, fontWeight: "bold", color: "#fff" },
-  paymentContainer: { flex: 1, justifyContent: "center", marginBottom: 24 },
+  paymentContainer: {
+  marginBottom: 8, // thay vì 24 để khoảng cách nhỏ lại
+},
   buttonPaymentContainer: {
     height: 60,
     justifyContent: "center",
