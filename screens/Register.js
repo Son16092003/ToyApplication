@@ -1,14 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from '../reduxtollkit/slice/userSlice'; // với Register.js
 
 const PRIMARY_COLOR = "#FFC107";
 
 const Register = ({ navigation }) => {
-    const [username, setUsername] = useState("");
+    const dispatch = useDispatch();
+    const { loading, error, user } = useSelector(state => state.user);
+
+    const [full_name, setFull_name] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
-    const [password, setPassword] = useState("");
+    const [password_hash, setPassword_hash] = useState("");
 
+
+    // const handleRegister = async () => {
+    //     try {
+    //         const response = await fetch("http://localhost:3000/api/register", {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify({ full_name, phone, email, password_hash })
+    //         });
+    //         const result = await response.json();
+    //         if (response.ok) {
+    //             alert("Đăng ký thành công");
+    //             navigation.navigate("Login");
+    //         } else {
+    //             alert("Lỗi: " + (result.message || "Đăng ký thất bại"));
+    //         }
+    //     } catch (err) {
+    //         alert("Lỗi: " + err.message);
+    //     }
+    // };
+    useEffect(() => {
+        if (user) {
+            alert("Đăng ký thành công");
+            navigation.navigate("Login");
+        }
+    }, [user]);
+
+    const handleRegister = () => {
+        dispatch(registerUser({ full_name, phone, email, password_hash }));
+    };
 
     return (
         <View style={styles.container}>
@@ -23,8 +57,8 @@ const Register = ({ navigation }) => {
                             placeholder="Nhập Tài khoản"
                             placeholderTextColor="#fff"
                             style={styles.inputText}
-                            value={username}
-                            onChangeText={setUsername}
+                            value={full_name}
+                            onChangeText={setFull_name}
                         />
                     </View>
 
@@ -56,12 +90,12 @@ const Register = ({ navigation }) => {
                             placeholderTextColor="#fff"
                             secureTextEntry={true}
                             style={styles.inputText}
-                            value={password}
-                            onChangeText={setPassword}
+                            value={password_hash}
+                            onChangeText={setPassword_hash}
                         />
                     </View>
 
-                    <TouchableOpacity style={styles.boxTextLogin}>
+                    <TouchableOpacity style={styles.boxTextLogin} onPress={handleRegister}>
                         <Text style={styles.bodyTextLogin}>Sign up</Text>
                     </TouchableOpacity>
 
@@ -75,6 +109,8 @@ const Register = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
+            {loading && <Text>Đang xử lý...</Text>}
+            {error && <Text style={{ color: 'red' }}>{error}</Text>}
         </View>
     );
 };
