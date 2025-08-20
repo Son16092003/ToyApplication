@@ -215,9 +215,9 @@ const styles = StyleSheet.create({
   },
   textDelete: { fontSize: 14, color: "red", fontWeight: "bold" },
   footerContainer: {
-  paddingHorizontal: 12,
-  paddingVertical: 10,
-},
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
   paymentTextContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -229,8 +229,8 @@ const styles = StyleSheet.create({
   },
   paymentText: { fontSize: 20, fontWeight: "bold", color: "#fff" },
   paymentContainer: {
-  marginBottom: 8, // thay vì 24 để khoảng cách nhỏ lại
-},
+    marginBottom: 8, // thay vì 24 để khoảng cách nhỏ lại
+  },
   buttonPaymentContainer: {
     height: 60,
     justifyContent: "center",

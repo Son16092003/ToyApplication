@@ -6,12 +6,14 @@ import Register from "../screens/Register";
 import ConfirmCheckOut from "../screens/ConfirmCheckOut";
 import SuccessCheckOut from "../screens/SuccessCheckOut";
 import Navbar from "../components/Navbar";
+import ProductDetail from "../screens/ProductDetail";
 
 const Stack = createNativeStackNavigator();
 
 const ProductStack = () => {
   return (
-    <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="ProductDetail" screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ProductDetail" component={ProductDetail} />
       <Stack.Screen name="Login" component={Login}/>
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Card" component={Card} />
